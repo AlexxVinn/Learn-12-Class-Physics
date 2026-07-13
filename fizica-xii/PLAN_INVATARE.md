@@ -50,14 +50,26 @@ Vezi secțiunea anterioară (câmp magnetic → transformator).
 - **5.2** Fotoelectric (Einstein) — prioritate maximă  
 - **5.3–5.4** Presiune luminii + de Broglie  
 
+### Săptămâna 9 — Atomul
+- **6.1** Spectre  
+- **6.2** Rutherford  
+- **6.3** Bohr — prioritate maximă  
+- **6.4** Laser  
+
+### Săptămânile 10–11 — Nucleul
+- **7.1–7.2** Structură + Eleg  
+- **7.3** Radioactivitate (α/β/γ, T½) — prioritate maximă  
+- **7.4** Fisiune / fuziune / lanț  
+- **7.5–7.7** Detectoare, doze, particule (intro)  
+
 ---
 
 ## Cum se completează platforma
 
-1. ~~Pag. 1–40: Cap. 1–2~~ ✅  
-2. ~~Pag. 41–90: Cap. 3–5 (început)~~ ✅  
-3. Următorul PDF: Cap. 5 final + Cap. 6–7  
-4. Astronomie + teste sumative  
+1. ~~Pag. 1–40~~ ✅  
+2. ~~Pag. 41–90~~ ✅  
+3. ~~Pag. 91–120~~ ✅  
+4. Următorul PDF: Cap. 7.8 + Cap. 8–9 + teste  
 
 ---
 

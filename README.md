@@ -1,8 +1,6 @@
 # Fizică XII – Învățare activă
 
-Platformă pentru învățarea fizicii de clasa a XII-a (RM): **teorie scurtă → probleme → simulatoare**.
+📂 **`fizica-xii/`** → deschide `index.html`.
 
-📂 Intră în **`fizica-xii/`** și deschide `index.html` (sau vezi `fizica-xii/README.md`).
-
-**Acoperire:** paginile **1–90** din manual  
-Cap. 1–2 (complet) · Cap. 3 (unde/optică) · Cap. 4 (relativitate) · Cap. 5.1–5.4 (cuantică).
+**Acoperire:** paginile **1–120**  
+Cap. 1–6 complete · Cap. 7 (nucleu + radioactivitate + fisiune + intro particule).

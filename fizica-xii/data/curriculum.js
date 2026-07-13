@@ -7,7 +7,7 @@ window.CURRICULUM = {
     title: "Fizică XII – Învățare activă",
     subtitle: "Teorie scurtă → Probleme → Simulatoare",
     source: "Marinciuc, Rusu, Nacu, Tiron – Fizică. Astronomie, clasa a XII-a, Știința 2017",
-    scope: "Pagini 1–90: Cap. 1–2 (complet) + Cap. 3 (unde/optică) + Cap. 4 (relativitate) + Cap. 5 (început cuantică)",
+    scope: "Pagini 1–120: Cap. 1–6 (complet) + Cap. 7 (până la particule, intro)",
     method: [
       "1. Citește teoria scurtă (2–5 minute)",
       "2. Memorează formulele-cheie și regulile",
@@ -18,7 +18,7 @@ window.CURRICULUM = {
   },
 
   learningPlan: {
-    title: "Planul tău de învățare (Cap. 1–5 început)",
+    title: "Planul tău de învățare (Cap. 1–7)",
     weeks: [
       {
         week: 1,
@@ -75,6 +75,27 @@ window.CURRICULUM = {
         themes: ["5.1", "5.2", "5.3", "5.4"],
         goal: "Planck, fotoelectric, de Broglie",
         daily: "45–60 min",
+      },
+      {
+        week: 9,
+        focus: "Atomul",
+        themes: ["6.1", "6.2", "6.3", "6.4"],
+        goal: "Spectre, Rutherford, Bohr, laser",
+        daily: "45–60 min",
+      },
+      {
+        week: 10,
+        focus: "Nucleul",
+        themes: ["7.1", "7.2", "7.3", "7.4"],
+        goal: "Structură, Eleg, radioactivitate, fisiune",
+        daily: "50–60 min",
+      },
+      {
+        week: 11,
+        focus: "Radiații & particule (intro)",
+        themes: ["7.5", "7.6", "7.7"],
+        goal: "Detectoare, doze, antiparticule",
+        daily: "35–45 min",
       },
     ],
     rules: [
@@ -162,12 +183,39 @@ window.CURRICULUM = {
         { id: "5.4", title: "Dualism undă–corpuscul. Unde de Broglie", pages: "88–90", difficulty: 3, hasSimulator: true, simulatorId: "de-broglie", timeMin: 40, optional: true },
       ],
     },
+    {
+      id: "cap6",
+      number: 6,
+      title: "Elemente de fizică a atomului",
+      pages: "91–101",
+      color: "#14b8a6",
+      themes: [
+        { id: "6.1", title: "Fenomene care arată structura atomului", pages: "91–92", difficulty: 1, hasSimulator: false, simulatorId: null, timeMin: 25 },
+        { id: "6.2", title: "Experimentul Rutherford. Modelul planetar", pages: "93–94", difficulty: 2, hasSimulator: true, simulatorId: "rutherford", timeMin: 35 },
+        { id: "6.3", title: "Modelul atomului după Bohr", pages: "95–98", difficulty: 3, hasSimulator: true, simulatorId: "bohr", timeMin: 55 },
+        { id: "6.4", title: "Emisia stimulată. Laserul", pages: "99–101", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 30, optional: true },
+      ],
+    },
+    {
+      id: "cap7",
+      number: 7,
+      title: "Nucleul atomic. Particule elementare",
+      pages: "102–120",
+      color: "#ef4444",
+      themes: [
+        { id: "7.1", title: "Nucleul atomic: caracteristici și structură", pages: "102–104", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 30 },
+        { id: "7.2", title: "Forțe nucleare. Energia de legătură", pages: "105–106", difficulty: 3, hasSimulator: true, simulatorId: "legatura-nucleara", timeMin: 45, optional: true },
+        { id: "7.3", title: "Radioactivitatea", pages: "107–110", difficulty: 3, hasSimulator: true, simulatorId: "dezintegrare", timeMin: 55 },
+        { id: "7.4", title: "Reacții nucleare. Fisiune și fuziune", pages: "111–114", difficulty: 3, hasSimulator: true, simulatorId: "fisiune-lant", timeMin: 50, optional: true },
+        { id: "7.5", title: "Detectoare de radiații ionizante", pages: "115–117", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 25, optional: true },
+        { id: "7.6", title: "Efectul biologic al radiațiilor", pages: "118", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 20, optional: true },
+        { id: "7.7", title: "Particule elementare (introducere)", pages: "119–120", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 20, optional: true, note: "Continuă în PDF-ul următor" },
+      ],
+    },
   ],
 
   upcoming: [
-    "Cap. 5 (final) + Cap. 6 – Fizica atomului",
-    "Cap. 7 – Nucleul atomic. Particule elementare",
-    "Cap. 8 – Astronomie",
+    "Cap. 7 (final: 7.8 interacțiuni) + Cap. 8 – Astronomie",
     "Cap. 9 – Tabloul științific al lumii",
     "Teste sumative + bank de probleme tip examen",
   ],

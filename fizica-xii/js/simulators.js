@@ -1120,7 +1120,6 @@ window.SIMULATORS = {
     function draw() {
       const U = +root.querySelector("#U").value;
       root.querySelector("#Uv").textContent = U;
-      // λ (nm) ≈ 1.226 / sqrt(U) for electrons
       const lambda_nm = 1.226 / Math.sqrt(U);
       root.querySelector("#readout").textContent =
         `λ_B ≈ 1,226/√U nm ≈ ${lambda_nm.toFixed(3)} nm | la ${U} V (compară cu vizibil ~500 nm)`;
@@ -1144,6 +1143,294 @@ window.SIMULATORS = {
       ctx.fillText("electron + undă asociată λ = h/p", 100, 40);
     }
     root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
+
+  "rutherford"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="300" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>Parametru de ciocnire b: <span id="bv">40</span></label><input type="range" id="b" min="0" max="80" value="40"></div>
+          <div><button class="btn primary" id="fire">Emite α</button></div>
+        </div>
+        <div class="sim-readout" id="readout">b mic → θ mare (chiar ~180°). Nucleul e greu și mic.</div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [], anim;
+
+    function frame() {
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      // nucleus
+      ctx.fillStyle = "#f87171";
+      ctx.beginPath();
+      ctx.arc(w / 2, h / 2, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("nucleu Au", w / 2 - 30, h / 2 - 20);
+
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        // crude Coulomb deflection near nucleus
+        const dx = p.x - w / 2, dy = p.y - h / 2;
+        const r2 = dx * dx + dy * dy;
+        if (r2 > 25 && r2 < 20000) {
+          const f = 900 / r2;
+          p.vx += (dx / Math.sqrt(r2)) * f * 0.15;
+          p.vy += (dy / Math.sqrt(r2)) * f * 0.15;
+        }
+        ctx.fillStyle = "#fbbf24";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      particles = particles.filter((p) => p.x > -20 && p.x < w + 20 && p.y > -20 && p.y < h + 20);
+      anim = requestAnimationFrame(frame);
+    }
+    root.querySelector("#fire").onclick = () => {
+      const b = +root.querySelector("#b").value;
+      const hh = canvas.height;
+      root.querySelector("#bv").textContent = b;
+      const sign = Math.random() > 0.5 ? 1 : -1;
+      particles.push({ x: 20, y: hh / 2 + sign * b, vx: 4, vy: 0 });
+      const thetaHint = b < 15 ? "θ mare — ciocnire „frontală”!" : b < 40 ? "deviere moderată" : "aproape nedeviată";
+      root.querySelector("#readout").textContent = `b=${b} px → ${thetaHint} | majoritatea α trec; rareori se întorc`;
+    };
+    frame();
+    root._cleanup = () => cancelAnimationFrame(anim);
+  },
+
+  "bohr"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="320" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>n inițial: <span id="nv">3</span></label><input type="range" id="n" min="2" max="6" value="3"></div>
+          <div><label>m final: <span id="mv">2</span></label><input type="range" id="m" min="1" max="5" value="2"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+      let n = +root.querySelector("#n").value;
+      let m = +root.querySelector("#m").value;
+      if (m >= n) m = n - 1;
+      root.querySelector("#m").value = m;
+      root.querySelector("#nv").textContent = n;
+      root.querySelector("#mv").textContent = m;
+      const En = -13.6 / (n * n);
+      const Em = -13.6 / (m * m);
+      const dE = Em - En; // negative for emission magnitude
+      const eV = Math.abs(En - Em);
+      const lambda = 1240 / eV;
+      const series = m === 1 ? "Lyman (UV)" : m === 2 ? "Balmer (vizibil)" : m === 3 ? "Paschen (IR)" : "serie IR";
+      root.querySelector("#readout").textContent =
+        `n=${n}→m=${m}: ΔE=${eV.toFixed(2)} eV | λ≈${lambda.toFixed(0)} nm | ${series} | En=−13,6/n²`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      const cx = 160, cy = h / 2;
+      ctx.fillStyle = "#f87171";
+      ctx.beginPath();
+      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+      ctx.fill();
+      for (let k = 1; k <= 6; k++) {
+        ctx.strokeStyle = k === n || k === m ? "#22c55e" : "#334155";
+        ctx.beginPath();
+        ctx.arc(cx, cy, 18 * k, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      // levels
+      for (let k = 1; k <= 6; k++) {
+        const E = -13.6 / (k * k);
+        const y = 280 + E * 12;
+        ctx.strokeStyle = k === n ? "#fbbf24" : k === m ? "#60a5fa" : "#475569";
+        ctx.beginPath();
+        ctx.moveTo(320, y);
+        ctx.lineTo(580, y);
+        ctx.stroke();
+        ctx.fillStyle = "#94a3b8";
+        ctx.fillText(`n=${k}  ${E.toFixed(2)} eV`, 320, y - 4);
+      }
+      const y1 = 280 + En * 12, y2 = 280 + Em * 12;
+      ctx.strokeStyle = "#a78bfa";
+      ctx.beginPath();
+      ctx.moveTo(500, y1);
+      ctx.lineTo(500, y2);
+      ctx.stroke();
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
+
+  "legatura-nucleara"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="280" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>A (nr. masă): <span id="Av">56</span></label><input type="range" id="A" min="2" max="240" value="56"></div>
+          <div><label>Δm (u): <span id="dv">0.50</span></label><input type="range" id="d" min="0.01" max="2" step="0.01" value="0.5"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+      const A = +root.querySelector("#A").value;
+      const dm = +root.querySelector("#d").value;
+      root.querySelector("#Av").textContent = A;
+      root.querySelector("#dv").textContent = dm.toFixed(2);
+      const E = dm * 931.5;
+      const eps = E / A;
+      root.querySelector("#readout").textContent =
+        `Eleg = Δm·931,5 = ${E.toFixed(1)} MeV | ε = Eleg/A = ${eps.toFixed(2)} MeV/nucleon | maximul tipic ~8,5 la A medii`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      // schematic ε(A) curve
+      ctx.strokeStyle = "#334155";
+      ctx.strokeRect(60, 40, 520, 180);
+      ctx.beginPath();
+      ctx.strokeStyle = "#22c55e";
+      for (let x = 0; x <= 520; x++) {
+        const a = 2 + (x / 520) * 238;
+        // rough binding per nucleon curve
+        const e = 8.5 - Math.pow((a - 56) / 120, 2) * 3 - (a < 20 ? (20 - a) * 0.15 : 0);
+        const y = 200 - e * 15;
+        x === 0 ? ctx.moveTo(60 + x, y) : ctx.lineTo(60 + x, y);
+      }
+      ctx.stroke();
+      const mx = 60 + ((A - 2) / 238) * 520;
+      ctx.strokeStyle = "#f43f5e";
+      ctx.beginPath();
+      ctx.moveTo(mx, 40);
+      ctx.lineTo(mx, 220);
+      ctx.stroke();
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("ε(A) — energie de legătură pe nucleon", 70, 30);
+      ctx.fillText("A", 560, 235);
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
+
+  "dezintegrare"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="280" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>T₁/₂ (u.a.): <span id="Tv">8</span></label><input type="range" id="T" min="1" max="20" value="8"></div>
+          <div><label>t / T₁/₂: <span id="tv">2.0</span></label><input type="range" id="t" min="0" max="6" step="0.1" value="2"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+      const T = +root.querySelector("#T").value;
+      const k = +root.querySelector("#t").value;
+      root.querySelector("#Tv").textContent = T;
+      root.querySelector("#tv").textContent = k.toFixed(1);
+      const remain = Math.pow(0.5, k) * 100;
+      root.querySelector("#readout").textContent =
+        `N = N₀ (1/2)^{t/T½} → rămân ${remain.toFixed(1)}% | dezintegrat ${(100 - remain).toFixed(1)}% | λ = ln2/T½`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "#334155";
+      ctx.strokeRect(50, 30, 540, 200);
+      ctx.beginPath();
+      ctx.strokeStyle = "#f59e0b";
+      for (let x = 0; x <= 540; x++) {
+        const kk = (x / 540) * 6;
+        const y = 30 + 200 * (1 - Math.pow(0.5, kk));
+        // plot remaining from top
+        const yr = 230 - 200 * Math.pow(0.5, kk);
+        x === 0 ? ctx.moveTo(50 + x, yr) : ctx.lineTo(50 + x, yr);
+      }
+      ctx.stroke();
+      const mx = 50 + (k / 6) * 540;
+      ctx.strokeStyle = "#22c55e";
+      ctx.beginPath();
+      ctx.moveTo(mx, 30);
+      ctx.lineTo(mx, 230);
+      ctx.stroke();
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("N(t)", 60, 24);
+      ctx.fillText("t", 580, 250);
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
+
+  "fisiune-lant"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="300" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>Neutroni / fisiune: <span id="nv">2.5</span></label><input type="range" id="n" min="1" max="3" step="0.5" value="2.5"></div>
+          <div><label>Generații: <span id="gv">4</span></label><input type="range" id="g" min="1" max="6" value="4"></div>
+          <div><button class="btn primary" id="run">Simulează lanțul</button></div>
+        </div>
+        <div class="sim-readout" id="readout">Fiecare fisiune ~200 MeV + 2–3 n → lanț dacă n produc noi fisiuni</div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function draw(gens) {
+      const n = +root.querySelector("#n").value;
+      const gmax = gens || +root.querySelector("#g").value;
+      root.querySelector("#nv").textContent = n;
+      root.querySelector("#gv").textContent = gmax;
+      let total = 0;
+      let count = 1;
+      for (let i = 0; i < gmax; i++) {
+        total += count;
+        count = Math.floor(count * n);
+      }
+      root.querySelector("#readout").textContent =
+        `~${total} fisiuni după ${gmax} generații (factor ~${n}) | energie ~${(total * 200).toExponential(2)} MeV (ordin de mărime)`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      let nodes = [{ x: 40, y: h / 2 }];
+      for (let g = 0; g < gmax; g++) {
+        const next = [];
+        const branching = Math.min(3, Math.round(n));
+        nodes.forEach((node, idx) => {
+          ctx.fillStyle = "#f87171";
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, 6, 0, Math.PI * 2);
+          ctx.fill();
+          for (let b = 0; b < branching; b++) {
+            const nx = node.x + 90;
+            const ny = node.y + (b - (branching - 1) / 2) * (80 / (g + 1));
+            ctx.strokeStyle = "#fbbf24";
+            ctx.beginPath();
+            ctx.moveTo(node.x, node.y);
+            ctx.lineTo(nx, ny);
+            ctx.stroke();
+            next.push({ x: nx, y: ny });
+          }
+        });
+        // limit nodes drawn
+        nodes = next.slice(0, 16);
+      }
+    }
+    root.querySelector("#run").onclick = () => draw();
+    root.querySelectorAll("input").forEach((el) => (el.oninput = () => draw()));
     draw();
   },
 };
