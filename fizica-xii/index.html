@@ -4,16 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fizică XII – Învățare activă</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="logo">Fizică <span>XII</span></div>
-      <div class="tagline">Teorie scurtă → Probleme → Simulatoare</div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="logo">Fizică <em>XII</em></div>
+        <p class="tagline">Teorie scurtă → Probleme → Simulatoare</p>
+      </div>
       <div id="sidebar-nav"></div>
     </aside>
+    <div class="overlay" id="overlay" hidden></div>
     <main class="main" id="main"></main>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Meniu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 
   <script src="data/curriculum.js"></script>
