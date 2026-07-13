@@ -25,10 +25,10 @@ Fiecare temă are aceleași 5 tab-uri:
 
 ---
 
-## Plan pe 8 săptămâni (pag. 1–90)
+## Plan pe 13 săptămâni (pag. 1–168, manual complet)
 
 ### Săptămânile 1–4 — Cap. 1–2
-Vezi secțiunea anterioară (câmp magnetic → transformator).
+Câmp magnetic → transformator (Fm, FL, Faraday, Lenz, RLC, transformator).
 
 ### Săptămâna 5 — Oscilații EM + unde
 - **3.1** Circuit LC, Thomson  
@@ -45,7 +45,7 @@ Vezi secțiunea anterioară (câmp magnetic → transformator).
 - **4.2** Dilatare + contracție  
 - **4.3–4.4** Lorentz + E=mc²  
 
-### Săptămâna 8 — Cuantică (început)
+### Săptămâna 8 — Cuantică
 - **5.1** Planck ε=hν  
 - **5.2** Fotoelectric (Einstein) — prioritate maximă  
 - **5.3–5.4** Presiune luminii + de Broglie  
@@ -56,11 +56,25 @@ Vezi secțiunea anterioară (câmp magnetic → transformator).
 - **6.3** Bohr — prioritate maximă  
 - **6.4** Laser  
 
-### Săptămânile 10–11 — Nucleul
+### Săptămânile 10–11 — Nucleul & particule
 - **7.1–7.2** Structură + Eleg  
 - **7.3** Radioactivitate (α/β/γ, T½) — prioritate maximă  
 - **7.4** Fisiune / fuziune / lanț  
 - **7.5–7.7** Detectoare, doze, particule (intro)  
+- **7.8** Cele 4 interacțiuni + leptoni/hadroni/quarci  
+
+### Săptămâna 12 — Astronomie (practică + Kepler)
+- **8.1** Ce este astronomia  
+- **8.2** Cer, timp, faze, eclipse — prioritate  
+- **8.3** Sistemul Solar  
+- **8.4** Kepler (T²=a³) — prioritate maximă  
+
+### Săptămâna 13 — Stele, Univers & sinteză
+- **8.5** Soarele  
+- **8.6** Stele / diagrama HR  
+- **8.7** Hubble, Big Bang  
+- **9.1–9.2** Tabloul științific al lumii  
+- **TEST** sumativ rapid  
 
 ---
 
@@ -69,7 +83,7 @@ Vezi secțiunea anterioară (câmp magnetic → transformator).
 1. ~~Pag. 1–40~~ ✅  
 2. ~~Pag. 41–90~~ ✅  
 3. ~~Pag. 91–120~~ ✅  
-4. Următorul PDF: Cap. 7.8 + Cap. 8–9 + teste  
+4. ~~Pag. 121–168~~ ✅ — **manual complet**  
 
 ---
 

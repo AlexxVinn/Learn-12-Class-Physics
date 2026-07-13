@@ -2,7 +2,7 @@
 
 Platformă: **teorie scurtă → probleme → simulatoare**.
 
-## Acoperire (pag. 1–120)
+## Acoperire (pag. 1–168 — manual complet)
 
 | Cap. | Conținut | Status |
 |------|----------|--------|
@@ -10,9 +10,12 @@ Platformă: **teorie scurtă → probleme → simulatoare**.
 | 2 | Curent alternativ | ✅ |
 | 3 | Oscilații / unde / optică | ✅ |
 | 4 | Relativitate restrânsă | ✅ |
-| 5 | Fizică cuantică (5.1–5.4) | ✅ |
+| 5 | Fizică cuantică | ✅ |
 | 6 | Fizica atomului | ✅ |
-| 7 | Nucleu (7.1–7.7 intro) | ✅ |
+| 7 | Nucleu + particule (inclusiv 7.8) | ✅ |
+| 8 | Astronomie | ✅ |
+| 9 | Tabloul științific al lumii | ✅ |
+| — | Test sumativ rapid | ✅ |
 
 ## Pornire
 
@@ -21,12 +24,13 @@ cd fizica-xii
 python3 -m http.server 8080
 ```
 
-## Simulatoare Cap. 6–7
+## Simulatoare (astronomie)
 
-- Rutherford (împrăștiere α)  
-- Bohr (niveluri + λ)  
-- Energie de legătură ε(A)  
-- Dezintegrare radioactivă N(t)  
-- Lanț de fisiune  
+- Faze Lună / condiții de eclipsă  
+- Orbita Kepler (T² = a³)  
+- Diagrama Hertzsprung–Russell  
+- Legea Hubble / expansiune  
 
-Plan: **11 săptămâni** — vezi `PLAN_INVATARE.md`.
+Plus simulatoarele din Cap. 1–7 (câmp magnetic, RLC, Young, fotoelectric, Bohr, radioactivitate…).
+
+Plan: **13 săptămâni** — vezi `PLAN_INVATARE.md`.

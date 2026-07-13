@@ -1,5 +1,5 @@
 /**
- * Curriculum Fizică XII – paginile 1–90 din manual
+ * Curriculum Fizică XII – manual complet (pag. 1–168)
  * Structură: capitole → teme → pași de învățare
  */
 window.CURRICULUM = {
@@ -7,7 +7,7 @@ window.CURRICULUM = {
     title: "Fizică XII – Învățare activă",
     subtitle: "Teorie scurtă → Probleme → Simulatoare",
     source: "Marinciuc, Rusu, Nacu, Tiron – Fizică. Astronomie, clasa a XII-a, Știința 2017",
-    scope: "Pagini 1–120: Cap. 1–6 (complet) + Cap. 7 (până la particule, intro)",
+    scope: "Pagini 1–168: Cap. 1–9 (manual complet) + test sumativ",
     method: [
       "1. Citește teoria scurtă (2–5 minute)",
       "2. Memorează formulele-cheie și regulile",
@@ -18,7 +18,7 @@ window.CURRICULUM = {
   },
 
   learningPlan: {
-    title: "Planul tău de învățare (Cap. 1–7)",
+    title: "Planul tău de învățare (Cap. 1–9, manual complet)",
     weeks: [
       {
         week: 1,
@@ -92,10 +92,24 @@ window.CURRICULUM = {
       },
       {
         week: 11,
-        focus: "Radiații & particule (intro)",
-        themes: ["7.5", "7.6", "7.7"],
-        goal: "Detectoare, doze, antiparticule",
-        daily: "35–45 min",
+        focus: "Radiații & particule",
+        themes: ["7.5", "7.6", "7.7", "7.8"],
+        goal: "Detectoare, doze, antiparticule, 4 interacțiuni",
+        daily: "40–50 min",
+      },
+      {
+        week: 12,
+        focus: "Astronomie practică & Sistem Solar",
+        themes: ["8.1", "8.2", "8.3", "8.4"],
+        goal: "Cer/timp/eclipse, planete, Kepler T²=a³",
+        daily: "45–60 min",
+      },
+      {
+        week: 13,
+        focus: "Stele, Univers & sinteză",
+        themes: ["8.5", "8.6", "8.7", "9.1", "9.2", "TEST"],
+        goal: "Soare, HR, Hubble/Big Bang, tabloul fizic, test",
+        daily: "45–60 min",
       },
     ],
     rules: [
@@ -200,7 +214,7 @@ window.CURRICULUM = {
       id: "cap7",
       number: 7,
       title: "Nucleul atomic. Particule elementare",
-      pages: "102–120",
+      pages: "102–121",
       color: "#ef4444",
       themes: [
         { id: "7.1", title: "Nucleul atomic: caracteristici și structură", pages: "102–104", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 30 },
@@ -209,14 +223,48 @@ window.CURRICULUM = {
         { id: "7.4", title: "Reacții nucleare. Fisiune și fuziune", pages: "111–114", difficulty: 3, hasSimulator: true, simulatorId: "fisiune-lant", timeMin: 50, optional: true },
         { id: "7.5", title: "Detectoare de radiații ionizante", pages: "115–117", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 25, optional: true },
         { id: "7.6", title: "Efectul biologic al radiațiilor", pages: "118", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 20, optional: true },
-        { id: "7.7", title: "Particule elementare (introducere)", pages: "119–120", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 20, optional: true, note: "Continuă în PDF-ul următor" },
+        { id: "7.7", title: "Particule elementare (introducere)", pages: "119–120", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 20, optional: true },
+        { id: "7.8", title: "Interacțiuni fundamentale. Clasificarea particulelor", pages: "121", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 30, optional: true, note: "Temă cu *" },
+      ],
+    },
+    {
+      id: "cap8",
+      number: 8,
+      title: "Elemente de astronomie",
+      pages: "122–156",
+      color: "#6366f1",
+      themes: [
+        { id: "8.1", title: "Astronomia în cadrul științelor fizice", pages: "122–124", difficulty: 1, hasSimulator: false, simulatorId: null, timeMin: 20 },
+        { id: "8.2", title: "Elemente de astronomie practică", pages: "125–134", difficulty: 2, hasSimulator: true, simulatorId: "faze-luna", timeMin: 50 },
+        { id: "8.3", title: "Sistemul Solar", pages: "135–145", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 40 },
+        { id: "8.4", title: "Elemente de mecanică cerească. Kepler", pages: "146–149", difficulty: 3, hasSimulator: true, simulatorId: "kepler-orbite", timeMin: 55 },
+        { id: "8.5", title: "Soarele", pages: "149–151", difficulty: 2, hasSimulator: false, simulatorId: null, timeMin: 25 },
+        { id: "8.6", title: "Stelele. Diagrama HR", pages: "151–153", difficulty: 3, hasSimulator: true, simulatorId: "diagrama-hr", timeMin: 40 },
+        { id: "8.7", title: "Noțiuni de cosmologie", pages: "154–156", difficulty: 2, hasSimulator: true, simulatorId: "hubble", timeMin: 35 },
+      ],
+    },
+    {
+      id: "cap9",
+      number: 9,
+      title: "Tabloul științific al lumii",
+      pages: "157–160",
+      color: "#84cc16",
+      themes: [
+        { id: "9.1", title: "Etapele tabloului fizic al lumii", pages: "157–159", difficulty: 1, hasSimulator: false, simulatorId: null, timeMin: 25 },
+        { id: "9.2", title: "Astronomia și concepția științifică despre lume", pages: "160", difficulty: 1, hasSimulator: false, simulatorId: null, timeMin: 20 },
+      ],
+    },
+    {
+      id: "cap-test",
+      number: 10,
+      title: "Evaluare & recapitulare",
+      pages: "161–167",
+      color: "#94a3b8",
+      themes: [
+        { id: "TEST", title: "Test sumativ rapid (Cap. 1–9)", pages: "161–167", difficulty: 3, hasSimulator: false, simulatorId: null, timeMin: 45, note: "Antrenament tip evaluare" },
       ],
     },
   ],
 
-  upcoming: [
-    "Cap. 7 (final: 7.8 interacțiuni) + Cap. 8 – Astronomie",
-    "Cap. 9 – Tabloul științific al lumii",
-    "Teste sumative + bank de probleme tip examen",
-  ],
+  upcoming: [],
 };

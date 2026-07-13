@@ -1,5 +1,5 @@
 /**
- * Cap. 7 – Nucleul atomic & particule (pag. ~102–120, până la 7.7 început)
+ * Cap. 7 – Nucleul atomic & particule (pag. ~102–120; 7.8 în content-cap8-9.js)
  */
 window.CONTENT = window.CONTENT || {};
 

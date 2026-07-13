@@ -1433,4 +1433,287 @@ window.SIMULATORS = {
     root.querySelectorAll("input").forEach((el) => (el.oninput = () => draw()));
     draw();
   },
+
+  "faze-luna"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="300" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>Zi de la lună nouă: <span id="dv">7.0</span></label>
+            <input type="range" id="day" min="0" max="29.5" step="0.5" value="7"></div>
+          <div><label>Înclinare orbită (°): <span id="iv">5.0</span></label>
+            <input type="range" id="inc" min="0" max="5.2" step="0.1" value="5"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+      const day = +root.querySelector("#day").value;
+      const inc = +root.querySelector("#inc").value;
+      root.querySelector("#dv").textContent = day.toFixed(1);
+      root.querySelector("#iv").textContent = inc.toFixed(1);
+      const phase = (day / 29.5) * Math.PI * 2;
+      const nearNode = Math.abs(Math.sin(phase)) < 0.18;
+      const canEclipse = nearNode && inc < 1.6;
+      const names = ["Lună nouă", "Crescătoare", "Lună plină", "Descrescătoare"];
+      const idx = Math.min(3, Math.floor(((day % 29.5) / 29.5) * 4));
+      root.querySelector("#readout").textContent = canEclipse
+        ? `Fază ~ ${names[idx]} | Aliniere + înclinare mică → eclipsă posibilă (Soare sau Lună, după fază)`
+        : `Fază ~ ${names[idx]} | sideral≈27,3 z · sinodic≈29,5 z | fără aliniere → fără eclipsă`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#fbbf24";
+      ctx.beginPath();
+      ctx.arc(70, h / 2, 22, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("Soare", 50, h / 2 + 40);
+
+      ctx.fillStyle = "#38bdf8";
+      ctx.beginPath();
+      ctx.arc(320, h / 2, 26, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("Pământ", 295, h / 2 + 45);
+
+      const r = 110;
+      ctx.strokeStyle = "#334155";
+      ctx.beginPath();
+      ctx.ellipse(320, h / 2, r, r * 0.32, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      const mx = 320 + r * Math.cos(phase);
+      const my = h / 2 + r * 0.32 * Math.sin(phase) + (inc - 2.5) * 5;
+      ctx.fillStyle = "#e2e8f0";
+      ctx.beginPath();
+      ctx.arc(mx, my, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#0f172a";
+      const shade = Math.cos(phase);
+      ctx.beginPath();
+      ctx.ellipse(mx + shade * 3, my, Math.abs(shade) * 14, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (canEclipse) {
+        ctx.strokeStyle = "#f87171";
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(70, h / 2);
+        ctx.lineTo(mx, my);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
+
+  "kepler-orbite"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="320" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>a (UA): <span id="av">1.00</span></label>
+            <input type="range" id="a" min="0.4" max="20" step="0.1" value="1"></div>
+          <div><label>e: <span id="ev">0.017</span></label>
+            <input type="range" id="e" min="0" max="0.7" step="0.001" value="0.017"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+    let ang = 0, anim;
+
+    function frame() {
+      const a = +root.querySelector("#a").value;
+      const e = +root.querySelector("#e").value;
+      root.querySelector("#av").textContent = a.toFixed(2);
+      root.querySelector("#ev").textContent = e.toFixed(3);
+      const T = Math.pow(a, 1.5);
+      const b = a * Math.sqrt(Math.max(0, 1 - e * e));
+      const peri = a * (1 - e);
+      root.querySelector("#readout").textContent =
+        `T ≈ ${T.toFixed(2)} ani (T²=a³) | periheliu=${peri.toFixed(2)} UA | afeliu=${(a * (1 + e)).toFixed(2)} UA | Kepler II: mai rapid la periheliu`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(0, 0, w, h);
+      const scale = Math.min(100, 240 / a);
+      const cx = w / 2, cy = h / 2;
+      const focus = e * a * scale;
+
+      ctx.strokeStyle = "#38bdf8";
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, a * scale, b * scale, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.beginPath();
+      ctx.arc(cx + focus, cy, 9, 0, Math.PI * 2);
+      ctx.fill();
+
+      const px = cx + a * scale * Math.cos(ang);
+      const py = cy + b * scale * Math.sin(ang);
+      ctx.strokeStyle = "#64748b";
+      ctx.beginPath();
+      ctx.moveTo(cx + focus, cy);
+      ctx.lineTo(px, py);
+      ctx.stroke();
+      ctx.fillStyle = "#a78bfa";
+      ctx.beginPath();
+      ctx.arc(px, py, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Kepler II: angular speed higher near perihelion (approx)
+      const rNow = Math.hypot(px - (cx + focus), py - cy);
+      ang += 0.035 * (a / Math.max(0.2, rNow / scale));
+      anim = requestAnimationFrame(frame);
+    }
+    root.querySelectorAll("input").forEach((el) => {
+      el.oninput = () => {
+        cancelAnimationFrame(anim);
+        frame();
+      };
+    });
+    frame();
+  },
+
+  "diagrama-hr"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="340" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>T (K): <span id="tv">5800</span></label>
+            <input type="range" id="t" min="3000" max="25000" step="100" value="5800"></div>
+          <div><label>L / L☉ (log): <span id="lv">1.0</span></label>
+            <input type="range" id="l" min="-2" max="4" step="0.05" value="0"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+      const T = +root.querySelector("#t").value;
+      const logL = +root.querySelector("#l").value;
+      const L = Math.pow(10, logL);
+      root.querySelector("#tv").textContent = T;
+      root.querySelector("#lv").textContent = L >= 10 ? L.toFixed(0) : L.toFixed(2);
+      const R = Math.sqrt(L) * Math.pow(5800 / T, 2);
+      let zone = "Secvența principală";
+      if (logL > 2 && T < 7000) zone = "Gigantă / supergigantă";
+      if (logL < -1 && T > 7000) zone = "Pitică albă (zonă tipică)";
+      if (Math.abs(T - 5800) < 400 && Math.abs(logL) < 0.15) zone = "Soarele (secvența principală, G)";
+      root.querySelector("#readout").textContent =
+        `T=${T} K · L≈${L.toPrecision(3)} L☉ · R≈${R.toFixed(2)} R☉ (L∝R²T⁴) · ${zone}`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "#334155";
+      ctx.beginPath();
+      ctx.moveTo(60, 30);
+      ctx.lineTo(60, 290);
+      ctx.lineTo(600, 290);
+      ctx.stroke();
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("log L ↑", 12, 40);
+      ctx.fillText("T → scade (O…M)", 470, 310);
+      ctx.fillText("25k", 70, 308);
+      ctx.fillText("3k", 575, 308);
+
+      ctx.strokeStyle = "#22c55e66";
+      ctx.lineWidth = 10;
+      ctx.beginPath();
+      ctx.moveTo(90, 50);
+      ctx.lineTo(520, 260);
+      ctx.stroke();
+      ctx.lineWidth = 1;
+
+      const x = 60 + ((25000 - T) / 22000) * 540;
+      const y = 290 - ((logL + 2) / 6) * 250;
+      ctx.fillStyle = T > 10000 ? "#93c5fd" : T > 6000 ? "#fef08a" : "#fb923c";
+      ctx.beginPath();
+      ctx.arc(x, Math.max(40, Math.min(280, y)), 8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
+
+  "hubble"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="320" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>d (Mpc): <span id="dv">50</span></label>
+            <input type="range" id="d" min="5" max="400" step="5" value="50"></div>
+          <div><label>H₀ (km/s/Mpc): <span id="hv">70</span></label>
+            <input type="range" id="h" min="50" max="80" step="1" value="70"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+      const d = +root.querySelector("#d").value;
+      const H = +root.querySelector("#h").value;
+      root.querySelector("#dv").textContent = d;
+      root.querySelector("#hv").textContent = H;
+      const v = H * d;
+      const age = 977.8 / H;
+      root.querySelector("#readout").textContent =
+        `v = H₀·d = ${v.toFixed(0)} km/s | vârstă Univers ≈ 1/H₀ ≈ ${age.toFixed(1)} miliarde ani | Big Bang`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "#334155";
+      ctx.beginPath();
+      ctx.moveTo(50, 270);
+      ctx.lineTo(600, 270);
+      ctx.moveTo(50, 270);
+      ctx.lineTo(50, 30);
+      ctx.stroke();
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("d (Mpc)", 555, 290);
+      ctx.fillText("v", 20, 40);
+
+      const maxD = 400, maxV = 80 * maxD;
+      ctx.strokeStyle = "#38bdf8";
+      ctx.beginPath();
+      ctx.moveTo(50, 270);
+      ctx.lineTo(50 + 550, 270 - ((H * maxD) / maxV) * 230);
+      ctx.stroke();
+
+      const x = 50 + (d / maxD) * 550;
+      const y = 270 - (v / maxV) * 230;
+      ctx.fillStyle = "#fbbf24";
+      ctx.beginPath();
+      ctx.arc(x, y, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      for (let i = 0; i < 10; i++) {
+        const ang = (i / 10) * Math.PI * 2;
+        const rr = 18 + (d / 400) * 35;
+        ctx.fillStyle = "#a78bfa99";
+        ctx.beginPath();
+        ctx.arc(480 + Math.cos(ang) * rr, 90 + Math.sin(ang) * rr, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = "#f87171";
+      ctx.beginPath();
+      ctx.arc(480, 90, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("expansiune", 445, 145);
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
 };
