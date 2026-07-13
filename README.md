@@ -1,7 +1,8 @@
 # Fizică XII – Învățare activă
 
-Platformă MVP pentru învățarea fizicii de clasa a XII-a (RM): **teorie scurtă → probleme → simulatoare**.
+Platformă pentru învățarea fizicii de clasa a XII-a (RM): **teorie scurtă → probleme → simulatoare**.
 
-📂 Intră în folderul **`fizica-xii/`** și deschide `index.html` (sau vezi `fizica-xii/README.md`).
+📂 Intră în **`fizica-xii/`** și deschide `index.html` (sau vezi `fizica-xii/README.md`).
 
-Acoperire actuală: **paginile 1–40** din manual (Cap. 1 Electromagnetism + Cap. 2 Curent alternativ până la transformator).
+**Acoperire:** paginile **1–90** din manual  
+Cap. 1–2 (complet) · Cap. 3 (unde/optică) · Cap. 4 (relativitate) · Cap. 5.1–5.4 (cuantică).

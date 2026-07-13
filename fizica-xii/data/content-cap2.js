@@ -379,6 +379,30 @@ window.CONTENT["2.5"] = {
       hint: "Curenți Foucault.",
       a: "Tolele izolate întrerup drumurile curenților turbionari → pierderi și încălzire mai mici.",
     },
+    {
+      id: "p2.5.4",
+      level: 2,
+      type: "calcul",
+      q: "N₁ = 1000, U₁ = 220 V, U₂ = 1,1 kV. Găsește K = U₁/U₂ și N₂.",
+      hint: "K = U₁/U₂; N₂/N₁ = U₂/U₁.",
+      a: "K = 220/1100 = 0,2 (ridicător, căci K<1 în definiția manualului). N₂ = 1000·1100/220 = 5000 spire.",
+    },
+    {
+      id: "p2.5.5",
+      level: 2,
+      type: "calcul",
+      q: "Coborâtor: U₁ = 220 V, U₂ = 36 V, I₂ = 22 A. Estimează I₁ (ideal).",
+      hint: "U₁I₁ ≈ U₂I₂.",
+      a: "I₁ ≈ U₂I₂/U₁ = 36·22/220 = 3,6 A.",
+    },
+    {
+      id: "p2.5.6",
+      level: 3,
+      type: "calcul",
+      q: "Putere consumată P₁ = 45 W, U₂ = 9 V, η = 95%. Cât e I₂?",
+      hint: "P₂ = η P₁; I₂ = P₂/U₂.",
+      a: "P₂ = 0,95·45 = 42,75 W; I₂ = 42,75/9 = 4,75 A.",
+    },
   ],
 
   quiz: [

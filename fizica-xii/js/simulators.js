@@ -670,11 +670,9 @@ window.SIMULATORS = {
       const w = canvas.width, h = canvas.height;
       ctx.fillStyle = "#0a0f18";
       ctx.fillRect(0, 0, w, h);
-      // core
       ctx.strokeStyle = "#64748b";
       ctx.lineWidth = 14;
       ctx.strokeRect(180, 70, 280, 160);
-      // windings
       const turns1 = Math.min(12, Math.max(3, Math.round(n1 / 80)));
       const turns2 = Math.min(12, Math.max(3, Math.round(n2 / 80)));
       ctx.strokeStyle = "#f59e0b";
@@ -697,6 +695,453 @@ window.SIMULATORS = {
       ctx.fillStyle = "#93c5fd";
       ctx.fillText(`Secundar N₂=${n2}`, 400, 50);
       ctx.fillText(`U₂≈${u2.toFixed(1)} V`, 400, 260);
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
+
+  "circuit-lc"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="320" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>L (mH): <span id="Lv">10</span></label><input type="range" id="L" min="1" max="100" value="10"></div>
+          <div><label>C (μF): <span id="Cv">1.0</span></label><input type="range" id="C" min="0.1" max="20" step="0.1" value="1"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+    let t = 0, anim;
+
+    function frame() {
+      const L = +root.querySelector("#L").value / 1000;
+      const C = +root.querySelector("#C").value / 1e6;
+      root.querySelector("#Lv").textContent = (L * 1000).toFixed(0);
+      root.querySelector("#Cv").textContent = (C * 1e6).toFixed(1);
+      const T = 2 * Math.PI * Math.sqrt(L * C);
+      const nu = 1 / T;
+      root.querySelector("#readout").textContent =
+        `Thomson: T = 2π√(LC) = ${(T * 1000).toFixed(3)} ms | ν = ${nu.toFixed(1)} Hz | energia oscilează We ↔ Wm`;
+
+      t += 0.05;
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      const omega = Math.sqrt(1 / (L * C));
+      const q = Math.cos(omega * t * 0.002);
+      const i = -Math.sin(omega * t * 0.002);
+
+      // schematic C and L energy bars
+      ctx.fillStyle = "#60a5fa";
+      ctx.fillRect(80, 80, 60, 140);
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(85, 85, 50, 130 * (1 - Math.abs(q)) / 1);
+      ctx.fillStyle = "#f59e0b";
+      ctx.fillRect(200, 80, 60, 140);
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(205, 85, 50, 130 * (1 - Math.abs(i)));
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("C (We)", 85, 70);
+      ctx.fillText("L (Wm)", 205, 70);
+
+      // waves
+      ctx.strokeStyle = "#60a5fa";
+      ctx.beginPath();
+      for (let x = 0; x < 300; x++) {
+        const y = 80 + 40 * Math.cos(omega * (t * 0.002 - x * 0.01));
+        x === 0 ? ctx.moveTo(320 + x, y) : ctx.lineTo(320 + x, y);
+      }
+      ctx.stroke();
+      ctx.strokeStyle = "#f59e0b";
+      ctx.beginPath();
+      for (let x = 0; x < 300; x++) {
+        const y = 200 + 40 * Math.sin(omega * (t * 0.002 - x * 0.01));
+        x === 0 ? ctx.moveTo(320 + x, y) : ctx.lineTo(320 + x, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("q(t)", 320, 50);
+      ctx.fillText("i(t)", 320, 170);
+      anim = requestAnimationFrame(frame);
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = () => {}));
+    frame();
+    root._cleanup = () => cancelAnimationFrame(anim);
+  },
+
+  "unda-em"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="300" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>Frecvență (relativă): <span id="fv">1.0</span></label><input type="range" id="f" min="0.4" max="2.5" step="0.1" value="1"></div>
+        </div>
+        <div class="sim-readout" id="readout">E ⊥ B ⊥ v — undă transversală. λ = c/ν</div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+    let t = 0, anim;
+
+    function frame() {
+      const f = +root.querySelector("#f").value;
+      root.querySelector("#fv").textContent = f.toFixed(1);
+      const lambda = 120 / f;
+      root.querySelector("#readout").textContent =
+        `E (albastru) ⊥ B (portocaliu) ⊥ propagare. λ vizual ≈ ${lambda.toFixed(0)} px | crește ν → scade λ`;
+
+      t += 0.08 * f;
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      const y0 = h / 2;
+      ctx.strokeStyle = "#334155";
+      ctx.beginPath();
+      ctx.moveTo(40, y0);
+      ctx.lineTo(w - 20, y0);
+      ctx.stroke();
+
+      ctx.strokeStyle = "#60a5fa";
+      ctx.beginPath();
+      for (let x = 40; x < w - 20; x++) {
+        const y = y0 - 50 * Math.sin(((x - 40) / lambda) * 2 * Math.PI - t);
+        x === 40 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // B as vertical ticks (into plane schematic as short lines)
+      ctx.strokeStyle = "#f59e0b";
+      for (let x = 40; x < w - 20; x += 18) {
+        const amp = 35 * Math.sin(((x - 40) / lambda) * 2 * Math.PI - t);
+        ctx.beginPath();
+        ctx.moveTo(x, y0);
+        ctx.lineTo(x, y0 - amp * 0.3);
+        // draw as "out of page" dots scaled
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(x, y0 + 55, 2 + Math.abs(amp) / 20, 0, Math.PI * 2);
+        ctx.fillStyle = "#f59e0b";
+        ctx.fill();
+      }
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("E", 50, 40);
+      ctx.fillText("B (schematic)", 50, y0 + 90);
+      ctx.fillText("→ v", w - 60, y0 - 10);
+      anim = requestAnimationFrame(frame);
+    }
+    frame();
+    root._cleanup = () => cancelAnimationFrame(anim);
+  },
+
+  "radar"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="280" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>Distanța țintă (km): <span id="dv">30</span></label><input type="range" id="d" min="5" max="120" value="30"></div>
+          <div><button class="btn primary" id="ping">📡 Emite impuls</button></div>
+        </div>
+        <div class="sim-readout" id="readout">r = c·Δt/2</div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+    let pulse = null, anim;
+
+    function drawBase() {
+      const d = +root.querySelector("#d").value;
+      root.querySelector("#dv").textContent = d;
+      const dt = (2 * d * 1000) / 3e8;
+      root.querySelector("#readout").textContent =
+        `Țintă la ${d} km → Δt dus-întors = ${(dt * 1e6).toFixed(1)} μs | r = cΔt/2`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#22c55e";
+      ctx.fillRect(40, h / 2 - 20, 30, 40);
+      ctx.fillStyle = "#f87171";
+      const tx = 80 + (d / 120) * 480;
+      ctx.beginPath();
+      ctx.moveTo(tx, h / 2);
+      ctx.lineTo(tx + 25, h / 2 - 15);
+      ctx.lineTo(tx + 25, h / 2 + 15);
+      ctx.fill();
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("Radar", 35, h / 2 - 30);
+      ctx.fillText("Țintă", tx, h / 2 - 25);
+
+      if (pulse) {
+        const age = (performance.now() - pulse.t0) / 1000;
+        const maxT = pulse.dt;
+        let x;
+        if (age < maxT / 2) x = 70 + (tx - 70) * (age / (maxT / 2));
+        else if (age < maxT) x = tx - (tx - 70) * ((age - maxT / 2) / (maxT / 2));
+        else pulse = null;
+        if (pulse) {
+          ctx.fillStyle = "#fbbf24";
+          ctx.beginPath();
+          ctx.arc(x, h / 2, 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      anim = requestAnimationFrame(drawBase);
+    }
+    root.querySelector("#ping").onclick = () => {
+      const d = +root.querySelector("#d").value;
+      pulse = { t0: performance.now(), dt: (2 * d * 1000) / 3e8 * 800 }; // scaled for visibility
+    };
+    drawBase();
+    root._cleanup = () => cancelAnimationFrame(anim);
+  },
+
+  "interferenta-young"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="320" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>λ (nm): <span id="lv">500</span></label><input type="range" id="l" min="400" max="700" value="500"></div>
+          <div><label>d (mm): <span id="dv">0.50</span></label><input type="range" id="d" min="0.2" max="1.5" step="0.05" value="0.5"></div>
+          <div><label>D (m): <span id="Dv">1.20</span></label><input type="range" id="D" min="0.5" max="2.5" step="0.1" value="1.2"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+      const lambda = +root.querySelector("#l").value * 1e-9;
+      const d = +root.querySelector("#d").value * 1e-3;
+      const D = +root.querySelector("#D").value;
+      root.querySelector("#lv").textContent = (lambda * 1e9).toFixed(0);
+      root.querySelector("#dv").textContent = (d * 1e3).toFixed(2);
+      root.querySelector("#Dv").textContent = D.toFixed(1);
+      const i = (lambda * D) / d;
+      root.querySelector("#readout").textContent =
+        `Interfranjă i = λD/d = ${(i * 1000).toFixed(2)} mm | crește λ sau D / scade d → franje mai late`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      // screen fringes
+      const scale = 80 / i; // pixels per meter on screen approx
+      for (let y = 0; y < h; y++) {
+        const ym = (y - h / 2) / (scale * 1000); // rough
+        const delta = (d * ym) / D;
+        const phase = (2 * Math.PI * delta) / lambda;
+        const inten = 0.5 * (1 + Math.cos(phase));
+        const r = Math.round(40 + inten * 180 * (lambda > 600e-9 ? 1 : lambda / 600e-9));
+        const g = Math.round(40 + inten * 180 * (lambda < 550e-9 ? lambda / 450e-9 : (700e-9 - lambda) / 200e-9));
+        const b = Math.round(40 + inten * 180 * (lambda < 500e-9 ? 1 : Math.max(0, (550e-9 - lambda) / 100e-9)));
+        ctx.fillStyle = `rgb(${Math.min(255,r)},${Math.min(255,Math.max(0,g))},${Math.min(255,Math.max(0,b))})`;
+        ctx.fillRect(320, y, 280, 1);
+      }
+      // slits
+      ctx.fillStyle = "#f59e0b";
+      ctx.fillRect(120, h / 2 - d * 2e4 - 4, 8, 8);
+      ctx.fillRect(120, h / 2 + d * 2e4 - 4, 8, 8);
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("S1", 90, h / 2 - d * 2e4);
+      ctx.fillText("S2", 90, h / 2 + d * 2e4 + 10);
+      ctx.fillText("Ecran", 420, 24);
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
+
+  "retea-diffractie"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="300" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>λ (nm): <span id="lv">600</span></label><input type="range" id="l" min="400" max="700" value="600"></div>
+          <div><label>d (μm): <span id="dv">10</span></label><input type="range" id="d" min="2" max="20" step="0.5" value="10"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+      const lambda = +root.querySelector("#l").value * 1e-9;
+      const d = +root.querySelector("#d").value * 1e-6;
+      root.querySelector("#lv").textContent = (lambda * 1e9).toFixed(0);
+      root.querySelector("#dv").textContent = (d * 1e6).toFixed(1);
+      const mmax = Math.floor(d / lambda);
+      root.querySelector("#readout").textContent =
+        `d sinφ = mλ | m_max = ${mmax} | total maxime ≈ ${2 * mmax + 1}`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      const cx = w / 2, cy = h - 40;
+      ctx.strokeStyle = "#334155";
+      ctx.beginPath();
+      ctx.moveTo(40, cy);
+      ctx.lineTo(w - 40, cy);
+      ctx.stroke();
+      for (let m = -mmax; m <= mmax; m++) {
+        const s = (m * lambda) / d;
+        if (Math.abs(s) > 1) continue;
+        const phi = Math.asin(s);
+        const x = cx + Math.tan(phi) * 200;
+        ctx.fillStyle = m === 0 ? "#fbbf24" : "#a78bfa";
+        ctx.beginPath();
+        ctx.arc(x, cy - 30 - Math.abs(m) * 8, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#94a3b8";
+        ctx.fillText(`m=${m}`, x - 10, cy - 45 - Math.abs(m) * 8);
+      }
+      ctx.fillStyle = "#f59e0b";
+      ctx.fillRect(cx - 40, cy - 5, 80, 10);
+      ctx.fillText("rețea", cx - 20, cy + 25);
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
+
+  "relativitate-timp"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="280" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>u/c = β: <span id="bv">0.60</span></label><input type="range" id="b" min="0" max="0.95" step="0.05" value="0.6"></div>
+          <div><label>Lungime proprie (m): <span id="lv">25</span></label><input type="range" id="l" min="5" max="50" value="25"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+      const beta = +root.querySelector("#b").value;
+      const lp = +root.querySelector("#l").value;
+      root.querySelector("#bv").textContent = beta.toFixed(2);
+      root.querySelector("#lv").textContent = lp;
+      const gamma = 1 / Math.sqrt(1 - beta * beta);
+      const l = lp / gamma;
+      root.querySelector("#readout").textContent =
+        `γ = ${gamma.toFixed(3)} | dilatare: τ = γ τ′ | contracție: l = l′/γ = ${l.toFixed(2)} (față de l′=${lp})`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#22c55e";
+      ctx.fillRect(80, 80, lp * 8, 40);
+      ctx.fillStyle = "#f59e0b";
+      ctx.fillRect(80, 160, l * 8, 40);
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText(`Lungime proprie l′ (repaus)`, 80, 70);
+      ctx.fillText(`Lungime contractată l (la β=${beta})`, 80, 150);
+      ctx.fillText(`γ=${gamma.toFixed(2)} → timpul propriu e cel mai scurt`, 80, 240);
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
+
+  "fotoelectric"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="300" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>λ (nm): <span id="lv">450</span></label><input type="range" id="l" min="250" max="700" value="450"></div>
+          <div><label>Le (eV): <span id="Wv">2.2</span></label><input type="range" id="W" min="1.5" max="5.5" step="0.1" value="2.2"></div>
+          <div><label>Intensitate Φ: <span id="Iv">5</span></label><input type="range" id="I" min="1" max="10" value="5"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+    const h = 4.14e-15; // eV·s
+    const c = 3e8;
+
+    function draw() {
+      const lambda = +root.querySelector("#l").value * 1e-9;
+      const Le = +root.querySelector("#W").value;
+      const Phi = +root.querySelector("#I").value;
+      root.querySelector("#lv").textContent = (lambda * 1e9).toFixed(0);
+      root.querySelector("#Wv").textContent = Le.toFixed(1);
+      root.querySelector("#Iv").textContent = Phi;
+      const nu = c / lambda;
+      const Eph = (h * 1e-0) * (c / lambda) / 1; // use eV: hc≈1240 eV·nm
+      const Eev = 1240 / (lambda * 1e9);
+      const Ec = Eev - Le;
+      const lambda0 = 1240 / Le;
+      const ok = Ec >= 0;
+
+      root.querySelector("#readout").textContent = ok
+        ? `hν = ${Eev.toFixed(2)} eV | Ec,max = ${Ec.toFixed(2)} eV | λ₀ = ${lambda0.toFixed(0)} nm | Is ~ Φ=${Phi}`
+        : `hν = ${Eev.toFixed(2)} eV < Le=${Le} eV → FĂRĂ efect (sub pragul roșu λ₀=${lambda0.toFixed(0)} nm)`;
+
+      const w = canvas.width, hh = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, hh);
+      // metal
+      ctx.fillStyle = "#64748b";
+      ctx.fillRect(40, 100, 120, 120);
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("Metal", 70, 90);
+      // photons
+      ctx.fillStyle = ok ? "#fbbf24" : "#475569";
+      for (let i = 0; i < Phi; i++) {
+        ctx.beginPath();
+        ctx.arc(220 + i * 12, 120 + (i % 3) * 20, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // electrons
+      if (ok) {
+        ctx.fillStyle = "#60a5fa";
+        for (let i = 0; i < Phi; i++) {
+          ctx.beginPath();
+          ctx.arc(200 + 40 + Ec * 40 + i * 8, 160 + (i % 4) * 15, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillText("fotoelectroni →", 300, 80);
+      } else {
+        ctx.fillStyle = "#ef4444";
+        ctx.fillText("Sub prag — electronii rămân în metal", 250, 160);
+      }
+    }
+    root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
+    draw();
+  },
+
+  "de-broglie"(root) {
+    root.innerHTML = `
+      <div class="sim-wrap">
+        <canvas width="640" height="260" id="sim-canvas"></canvas>
+        <div class="sim-controls">
+          <div><label>U (V): <span id="Uv">100</span></label><input type="range" id="U" min="10" max="500" step="10" value="100"></div>
+        </div>
+        <div class="sim-readout" id="readout"></div>
+      </div>`;
+    const canvas = root.querySelector("#sim-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+      const U = +root.querySelector("#U").value;
+      root.querySelector("#Uv").textContent = U;
+      // λ (nm) ≈ 1.226 / sqrt(U) for electrons
+      const lambda_nm = 1.226 / Math.sqrt(U);
+      root.querySelector("#readout").textContent =
+        `λ_B ≈ 1,226/√U nm ≈ ${lambda_nm.toFixed(3)} nm | la ${U} V (compară cu vizibil ~500 nm)`;
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#0a0f18";
+      ctx.fillRect(0, 0, w, h);
+      const period = Math.max(8, lambda_nm * 80);
+      ctx.strokeStyle = "#a78bfa";
+      ctx.beginPath();
+      for (let x = 40; x < w - 40; x++) {
+        const y = h / 2 + 40 * Math.sin((x / period) * 2 * Math.PI);
+        x === 40 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "#60a5fa";
+      ctx.beginPath();
+      ctx.arc(80, h / 2, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("electron + undă asociată λ = h/p", 100, 40);
     }
     root.querySelectorAll("input").forEach((el) => (el.oninput = draw));
     draw();
